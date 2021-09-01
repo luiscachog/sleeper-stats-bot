@@ -290,7 +290,7 @@ These are all of the functions that create the final strings to send.
 def get_bot_message_schedule():
     x = PrettyTable()
 
-    x.add_column("Day", ["Thursday", "Friday", "Sunday", "Monday", "Tuesday", "5 days before Draft Day" ])
+    x.add_column("Day", ["Thursday", "Friday", "Sunday", "Monday", "Tuesday", "Daily" ])
     x.add_column("Hour", ["19:00", "12:00", "22:00", "12:00" , "11:00", "18:00" ])
     x.add_column("Message", ["Week Matchups", "Thursday Night Scores", "Close Games", "Monday Night Scores", "League Standings", "Draft Reminder" ])
 
@@ -303,8 +303,7 @@ def get_welcome_string():
     """
     welcome_message = "👋 Hello, I am the " + LEAGUE_NAME + " Sleeper Stats Bot! \n\n"
     welcome_message += "I am going to sent you some stats about the league according to this schedule: \n "
-    welcome_message += "<pre>" + get_bot_message_schedule() + "</pre>"
-
+    welcome_message += "<pre>" + get_bot_message_schedule() + "</pre> \n "
     welcome_message += "Welcome to the {} season \n\n".format(STARTING_YEAR)
     welcome_message += "I'm still in dev mode, new features on the way."
 
@@ -566,8 +565,8 @@ if __name__ == "__main__":
     schedule.every().sunday.at("22:00").do(bot.send, get_close_games_string, league_id, int(close_num))     # Close games Sunday on 10:00 pm ET
     schedule.every().monday.at("22:07").do(bot.send, get_scores_string, league_id)                          # Scores Monday at 12 pm ET
     schedule.every().tuesday.at("11:00").do(bot.send, get_standings_string,league_id)                       # Standings Tuesday at 11:00 am ET
-    schedule.every().wednesday.at("10:54").do(bot.send, get_best_and_worst_string,league_id)                # Standings Tuesday at 11:01 am ET
-    schedule.every().day.at("12:59").do(bot.send, get_draft_reminder_string, league_id)                     # Draft reminder every day at 19:34 am ET
+    schedule.every().tuesday.at("11:01").do(bot.send, get_best_and_worst_string,league_id)                  # Standings Tuesday at 11:01 am ET
+    schedule.every().day.at("18:00").do(bot.send, get_draft_reminder_string, league_id)                     # Draft reminder every day at 18:00 pm ET
 
 
     while True:
