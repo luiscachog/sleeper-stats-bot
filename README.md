@@ -11,22 +11,22 @@ This project was inspired by https://github.com/dtcarls/ff_bot.
 A GroupMe/Slack/Discord Bot for Sleeper fantasy leagues. It sends messages on the schedule below.
 
 ## Current Schedule
-- Thursday: 
+- Thursday:
      - 7pm ET Matchups for the week.
 - Friday:
      - 12pm ET Scores (Only does half ppr scores for now)
 - Sunday:
-     - 7pm ET Close games. 
-- Monday: 
+     - 7pm ET Close games.
+- Monday:
      - 12pm ET Scores (Only does half ppr scores for now)
-     - 3pm ET Miracle Monday! Displays the close games with the number of playes remaining for each roster. 
-- Tuesday: 
+     - 3pm ET Miracle Monday! Displays the close games with the number of playes remaining for each roster.
+- Tuesday:
      - 11am ET league standing.
      - 11:01am ET Highest scoring team, lowest scoring team, most points left on the bench, and teams that started players that scored negative.
 
 
 ## Setup
-1. [ GroupMe ](#groupme) 
+1. [ GroupMe ](#groupme)
 2. [ Slack ](#slack)
 3. [ Discord ](#discord)
 
@@ -79,7 +79,7 @@ A GroupMe/Slack/Discord Bot for Sleeper fantasy leagues. It sends messages on th
 ## Deploy the bot
 - Step 1: Go to https://signup.heroku.com/login and create a Heroku account.
 - Step 2: Click this button to deploy the Bot:
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/SwapnikKatkoori/sleeper-ff-bot)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/luiscachog/sleeper-stats-bot)
 - Step 3: Choose an app name
 
 - Step 4:
@@ -109,6 +109,5 @@ And you are all done! The bot should now be deployed an you should get a welcome
 
 👤 **Swapnik Katkoori**
 
-## License 
+## License
 This project is licensed under the terms of the MIT license.
-

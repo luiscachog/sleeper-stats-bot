@@ -1,3 +1,5 @@
+from constants import GITHUB_REPOSITORY
+
 class BotInterface:
     def __init__(self, bot_id):
         self.bot_id = bot_id
@@ -22,5 +24,5 @@ class BotInterface:
             message = callback(*args)
         except Exception as err:
             message = "There was an error that occurred with the bot: {}\n\n".format(err)
-            message += "Please report it at https://github.com/SwapnikKatkoori/sleeper-ff-bot/issues"
+            message += "Please report it at " + GITHUB_REPOSITORY + "/issues"
         self.send_message(message)

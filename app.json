@@ -1,7 +1,7 @@
 {
   "name": "sleeper-ff-bot",
   "description": "A GroupMe/Slack/Discord Bot for Sleeper fantasy leagues",
-  "repository": "https://github.com/SwapnikKatkoori/sleeper-ff-bot",
+  "repository": "https://github.com/luiscachog/sleeper-stats-bot",
   "logo": "",
   "keywords": [
     "Bot",
@@ -11,35 +11,68 @@
     "Heroku",
     "Groupme",
     "Slack",
-    "Discord"
+    "Discord",
+    "Telegram"
   ],
   "env": {
     "BOT_TYPE": {
-      "description": "The type of Bot. Options are groupme, slack, or discord.",
-      "value": "groupme"
+      "description": "The type of Bot. Options are groupme, slack, discord, or telegram.",
+      "value": "telegram"
+    },
+    "BOT_ID": {
+      "description": "The Groupme bot_id. Required if BOT_TYPE=groupme",
+      "value": "1"
+    },
+    "SLACK_WEBHOOK": {
+      "description": "The Slack Webhook. Required if BOT_TYPE=slack",
+      "value": "1"
+    },
+    "DISCORD_WEBHOOK": {
+      "description": "The Discord Webhook. Required if BOT_TYPE=discord",
+      "value": "1"
+    },
+    "TELEGRAM_WEBHOOK":{
+      "description": "The Telegram Webhook. Required if BOT_TYPE=telegram",
+      "value": "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN"
+    },
+    "TELEGRAM_BOT_TOKEN":{
+      "description": "The Telegram Bot Token. Required if BOT_TYPE=telegram",
+      "value": "1"
+    },
+    "TELEGRAM_CHAT_ID":{
+      "description": "The Telegram Chat ID. Required if BOT_TYPE=telegram",
+      "value": "1"
     },
     "LEAGUE_ID": {
-      "description": "The Sleeper league id.",
+      "description": "The Sleeper League ID.",
       "value": "1"
     },
     "CLOSE_NUM": {
       "description": "How close a game score needs to be to be considered close.",
-      "value": "20"
+      "value": "10"
     },
     "NUMBER_OF_PLAYOFF_TEAMS": {
       "description": "The number of playoff teams in the league."
     },
-    "BOT_ID": {
-      "description": "The Groupme bot_id. Required if the bot type is groupme.",
-      "value": "1"
+    "SEASON_START_DATE": {
+      "description": "The start date of the season (first Thursday of the regular season) in YYYY-MM-DD format.",
+      "value": "2021-09-09"
     },
-    "SLACK_WEBHOOK": {
-      "description": "The Slack Webhook. Required if the bot type is slack.",
-      "value": "1"
+    "PRE_SEASON_START_DATE": {
+      "description": "The start date of the pre-season (Hall of Fame game) in YYYY-MM-DD format.",
+      "value": "2021-08-05"
     },
-    "DISCORD_WEBHOOK": {
-      "description": "The Discord Webhook. Required if the bot type is discord.",
-      "value": "1"
+    "OFF_SEASON_START_DATE": {
+      "description": "The start date of the off-season (Draft Order Updates) in YYYY-MM-DD format."
+      "value": "2021-07-15"
+    },
+    "STOP_DATE": {
+      "description": "The date messages should stop in YYYY-MM-DD format.",
+      "value": "2021-12-31"
+    },
+    "INIT_MESSAGE": {
+      "description": "True/False should the bot send the initialize message.",
+      "value": true
     }
   }
 }

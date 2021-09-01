@@ -2,17 +2,18 @@ import schedule
 import time
 import os
 import pendulum
+import logging
+from prettytable import PrettyTable
 from group_me import GroupMe
 from slack import Slack
 from discord import Discord
+from telegram import Telegram
 from sleeper_wrapper import League, Stats, Players
-from constants import STARTING_MONTH, STARTING_YEAR, STARTING_DAY, START_DATE_STRING
+from constants import STARTING_MONTH, STARTING_YEAR, STARTING_DAY, START_DATE_STRING, GITHUB_REPOSITORY, LEAGUE_NAME, CLOSE_NUM, TIMEZONE
 
 """
 These are all of the utility functions.
 """
-
-
 def get_league_scoreboards(league_id, week):
     """
     Returns the scoreboards from the specified sleeper league.
@@ -286,17 +287,26 @@ def get_current_week():
 These are all of the functions that create the final strings to send.
 """
 
+def get_bot_message_schedule():
+    x = PrettyTable()
+
+    x.add_column("Day", ["Thursday", "Friday", "Sunday", "Monday", "Tuesday", "" ])
+    x.add_column("Hour", ["19:00", "12:00", "22:00", "12:00" , "11:00", "18:00" ])
+    x.add_column("Message", ["Week Matchups", "Thursday Night Scores", "Close Games", "Monday Night Scores", "League Standings", "Draft Reminder" ])
+
+    return x.get_string()
 
 def get_welcome_string():
     """
     Creates and returns the welcome message
     :return: String welcome message
     """
-    welcome_message = "👋 Hello, I am Sleeper Bot! \n\nThe bot schedule for the {} ff season can be found here: ".format(
-        STARTING_YEAR)
-    welcome_message += "https://github.com/SwapnikKatkoori/sleeper-ff-bot#current-schedule \n\n"
-    welcome_message += "Any feature requests, contributions, or issues for the bot can be added here: " \
-                       "https://github.com/SwapnikKatkoori/sleeper-ff-bot \n\n"
+    welcome_message = "👋 Hello, I am the " + LEAGUE_NAME + " Sleeper Stats Bot! \n\n"
+    welcome_message += "I am going to sent you some stats about the league according to this schedule: \n "
+    welcome_message += "<pre>" + get_bot_message_schedule() + "</pre>"
+
+    welcome_message += "Welcome to the {} season \n\n".format(STARTING_YEAR)
+    welcome_message += "I'm still in dev mode, new features on the way."
 
     return welcome_message
 
@@ -413,11 +423,11 @@ def get_standings_string(league_id):
         team = standing[0]
         if team is None:
             team = "Team NA"
-        if len(team) >= 7:
-            team_name = team[:7]
+        if len(team) >= 50:
+            team_name = team[:50]
         else:
             team_name = team
-        string_to_add = "{0:^7} {1:^10} {2:>7} {3:>7}\n".format(i + 1, team_name, standing[1], standing[3])
+        string_to_add = "{0:^7} | {1:^10} | {2:>7} | {3:>7}\n".format(i + 1, team_name, standing[1], standing[3])
         if i == playoff_line:
             string_to_add += "________________________________\n\n"
         final_message_string += string_to_add
@@ -479,6 +489,29 @@ def get_bench_beats_starters_string(league_id):
         all_players = matchup["players"]
         bench = set(all_players) - set(starters)
 
+def get_draft_reminder_string(league_id):
+    """
+    Gets a string of the current season draft reminder.
+    :param league_id: Int league_id
+    :return: String with
+    """
+    league = League(league_id)
+    draft_date = pendulum.from_timestamp(league.get_all_drafts()[0]["start_time"]/1000, tz=TIMEZONE)
+
+    time_to_draft = draft_date - pendulum.now(tz=TIMEZONE)
+
+    draft_reminder_string = "________________________________\n"
+    draft_reminder_string += "Draft Reminder\n"
+    draft_reminder_string += "________________________________\n\n"
+
+    if 0 < time_to_draft.days <= 4:
+        draft_reminder_string += time_to_draft.in_words() + " until draft day.  [ " + draft_date.format('dddd Do [of] MMMM YYYY HH:mm A') + "] \n"
+    else:
+        draft_reminder_string += "Draft day is today! [ " + draft_date.format('HH:mm A') + " ]\n"
+
+    return draft_reminder_string
+
+
 
 if __name__ == "__main__":
     """
@@ -486,16 +519,29 @@ if __name__ == "__main__":
     """
     bot = None
 
+    logging.basicConfig()
+
+    schedule_logger = logging.getLogger('schedule')
+    schedule_logger.setLevel(level=logging.DEBUG)
+
     bot_type = os.environ["BOT_TYPE"]
     league_id = os.environ["LEAGUE_ID"]
+    off_season_start_date = os.environ["OFF_SEASON_START_DATE"]
+    pre_season_start_date = os.environ["PRE_SEASON_START_DATE"]
+    starting_date = pendulum.from_format(os.environ["SEASON_START_DATE"],'YYYY-MM-DD' )
+    stop_date = os.environ["STOP_DATE"]
 
-    # Check if the user specified the close game num. Default is 20.
+    # Check if the user specified the close game num. Default is 10.
     try:
         close_num = os.environ["CLOSE_NUM"]
     except:
-        close_num = 20
+        close_num = CLOSE_NUM
 
-    starting_date = pendulum.datetime(STARTING_YEAR, STARTING_MONTH, STARTING_DAY)
+    start_day = int(os.environ["SEASON_START_DATE"][8:10])
+    start_day += 1
+    str_day_after_start = str(start_day).zfill(2)
+    str_day_after_start_final = os.environ["SEASON_START_DATE"][0:8] + str_day_after_start
+
 
     if bot_type == "groupme":
         bot_id = os.environ["BOT_ID"]
@@ -506,18 +552,23 @@ if __name__ == "__main__":
     elif bot_type == "discord":
         webhook = os.environ["DISCORD_WEBHOOK"]
         bot = Discord(webhook)
+    elif bot_type == "telegram":
+        webhook = os.environ["TELEGRAM_WEBHOOK"]
+        bot = Telegram(webhook)
 
-    bot.send(get_welcome_string)  # inital message to send
-    schedule.every().thursday.at("19:00").do(bot.send, get_matchups_string,
-                                             league_id)  # Matchups Thursday at 4:00 pm ET
-    schedule.every().friday.at("12:00").do(bot.send, get_scores_string, league_id)  # Scores Friday at 12 pm ET
-    schedule.every().sunday.at("23:00").do(bot.send, get_close_games_string, league_id,
-                                           int(close_num))  # Close games Sunday on 7:00 pm ET
-    schedule.every().monday.at("12:00").do(bot.send, get_scores_string, league_id)  # Scores Monday at 12 pm ET
-    schedule.every().tuesday.at("15:00").do(bot.send, get_standings_string,
-                                            league_id)  # Standings Tuesday at 11:00 am ET
-    schedule.every().tuesday.at("15:01").do(bot.send, get_best_and_worst_string,
-                                            league_id)  # Standings Tuesday at 11:01 am ET
+    if os.environ["INIT_MESSAGE"] == "true":
+        bot.send(get_welcome_string)  # inital message to send
+
+    # get_draft_reminder_string(league_id)
+
+    schedule.every().thursday.at("19:00").do(bot.send, get_matchups_string, league_id)                      # Matchups Thursday at 4:00 pm ET
+    schedule.every().friday.at("12:00").do(bot.send, get_scores_string, league_id)                          # Scores Friday at 12 pm ET
+    schedule.every().sunday.at("22:00").do(bot.send, get_close_games_string, league_id, int(close_num))     # Close games Sunday on 10:00 pm ET
+    schedule.every().monday.at("22:07").do(bot.send, get_scores_string, league_id)                          # Scores Monday at 12 pm ET
+    schedule.every().tuesday.at("11:00").do(bot.send, get_standings_string,league_id)                       # Standings Tuesday at 11:00 am ET
+    schedule.every().wednesday.at("10:54").do(bot.send, get_best_and_worst_string,league_id)                # Standings Tuesday at 11:01 am ET
+    schedule.every().day.at("12:59").do(bot.send, get_draft_reminder_string, league_id)                     # Draft reminder every day at 19:34 am ET
+
 
     while True:
         if starting_date <= pendulum.today():
