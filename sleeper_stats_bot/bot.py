@@ -290,7 +290,7 @@ These are all of the functions that create the final strings to send.
 def get_bot_message_schedule():
     x = PrettyTable()
 
-    x.add_column("Day", ["Thursday", "Friday", "Sunday", "Monday", "Tuesday", "" ])
+    x.add_column("Day", ["Thursday", "Friday", "Sunday", "Monday", "Tuesday", "5 days before Draft Day" ])
     x.add_column("Hour", ["19:00", "12:00", "22:00", "12:00" , "11:00", "18:00" ])
     x.add_column("Message", ["Week Matchups", "Thursday Night Scores", "Close Games", "Monday Night Scores", "League Standings", "Draft Reminder" ])
 
