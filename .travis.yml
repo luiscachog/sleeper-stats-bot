@@ -11,4 +11,16 @@ script:
   - pytest
 
 env:
-  - BOT_ID="e403ea1c8dd6db80f7583c32cf" BOT_TYPE="groupme" LEAGUE_ID="356572479369535488"
+  - BOT_TYPE=telegram
+  - SEASON_START_DATE=2021-09-09
+  - PRE_SEASON_START_DATE=2021-08-05
+  - OFF_SEASON_START_DATE=2022-07-15
+  - STOP_DATE=2022-01-01
+  - INIT_MESSAGE=false
+  #####
+  #####     Next envirtonment variables need to be set in the CI environment
+  #####     https://docs.travis-ci.com/user/environment-variables/#defining-variables-in-repository-settings
+  # - TELEGRAM_WEBHOOK=https://api.telegram.org/$TELEGRAM_BOT_TOKEN
+  # - TELEGRAM_BOT_TOKEN=
+  # - TELEGRAM_CHAT_ID=
+  # - LEAGUE_ID=707614819116736512
