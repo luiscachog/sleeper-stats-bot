@@ -63,7 +63,7 @@
       "value": "2021-08-05"
     },
     "OFF_SEASON_START_DATE": {
-      "description": "The start date of the off-season (Draft Order Updates) in YYYY-MM-DD format."
+      "description": "The start date of the off-season (Draft Order Updates) in YYYY-MM-DD format.",
       "value": "2021-07-15"
     },
     "STOP_DATE": {
