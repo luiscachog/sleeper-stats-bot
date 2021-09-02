@@ -566,7 +566,7 @@ if __name__ == "__main__":
     schedule.every().monday.at("22:07").do(bot.send, get_scores_string, league_id)                          # Scores Monday at 12 pm ET
     schedule.every().tuesday.at("11:00").do(bot.send, get_standings_string,league_id)                       # Standings Tuesday at 11:00 am ET
     schedule.every().tuesday.at("11:01").do(bot.send, get_best_and_worst_string,league_id)                  # Standings Tuesday at 11:01 am ET
-    schedule.every().day.at("09:30").do(bot.send, get_draft_reminder_string, league_id)                     # Draft reminder every day at 18:00 pm ET
+    schedule.every().day.at("14:35").do(bot.send, get_draft_reminder_string, league_id)                     # Draft reminder every day at 18:00 pm ET
 
 
     while True:
