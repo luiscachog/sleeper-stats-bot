@@ -47,7 +47,7 @@ def get_season_week_date(current_season, game_number, api_key):
         data =  response.json()
         season_week = data[game_number - 1]
 
-    season_week_date = pendulum.parse(season_week["Date"])
+    season_week_date = pendulum.parse(season_week["Date"], tz=TIMEZONE)
 
     return season_week_date
 
@@ -62,7 +62,7 @@ def get_pre_season_week_date(current_season, game_number, api_key):
         data =  response.json()
         pre_season_week = data[game_number - 1]
 
-    pre_season_week_date = pendulum.parse(pre_season_week["Date"])
+    pre_season_week_date = pendulum.parse(pre_season_week["Date"], tz=TIMEZONE)
 
     return  pre_season_week_date
 
