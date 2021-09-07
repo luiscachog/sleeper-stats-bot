@@ -54,25 +54,13 @@
     "NUMBER_OF_PLAYOFF_TEAMS": {
       "description": "The number of playoff teams in the league."
     },
-    "SEASON_START_DATE": {
-      "description": "The start date of the season (first Thursday of the regular season) in YYYY-MM-DD format.",
-      "value": "2021-09-09"
-    },
-    "PRE_SEASON_START_DATE": {
-      "description": "The start date of the pre-season (Hall of Fame game) in YYYY-MM-DD format.",
-      "value": "2021-08-05"
-    },
-    "OFF_SEASON_START_DATE": {
-      "description": "The start date of the off-season (Draft Order Updates) in YYYY-MM-DD format.",
-      "value": "2021-07-15"
-    },
-    "STOP_DATE": {
-      "description": "The date messages should stop in YYYY-MM-DD format.",
-      "value": "2021-12-31"
-    },
     "INIT_MESSAGE": {
       "description": "True/False should the bot send the initialize message.",
       "value": true
+    },
+    "API_KEY":
+    {
+      "description": "https://api.sportsdata.io API KEY"
     }
   }
 }

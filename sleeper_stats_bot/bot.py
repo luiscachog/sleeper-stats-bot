@@ -3,17 +3,72 @@ import time
 import os
 import pendulum
 import logging
+import requests
+import re
+import pandas as pd
 from prettytable import PrettyTable
 from group_me import GroupMe
 from slack import Slack
 from discord import Discord
 from telegram import Telegram
 from sleeper_wrapper import League, Stats, Players
-from constants import STARTING_MONTH, STARTING_YEAR, STARTING_DAY, START_DATE_STRING, GITHUB_REPOSITORY, LEAGUE_NAME, CLOSE_NUM, TIMEZONE
+from constants import GITHUB_REPOSITORY, LEAGUE_NAME, CLOSE_NUM, TIMEZONE, HTTP_USER_AGENT
+# , STARTING_YEAR, STARTING_MONTH, STARTING_DAY
 
 """
 These are all of the utility functions.
 """
+
+def get_current_season(api_key):
+    """
+    Returns the current season year
+    :param api_key: String https://sportsdata.io API Key
+    :return: String with the current season year
+    """
+    headers = {'User-Agent': HTTP_USER_AGENT, 'Ocp-Apim-Subscription-Key': api_key }
+    response = requests.get("https://api.sportsdata.io/v3/nfl/scores/json/CurrentSeason", headers=headers)
+
+    if response.status_code != 200:
+        print(f'Error ({response.status_code}), check API address')
+    else:
+        current_season = response.text
+
+    return current_season
+
+def get_season_week_date(current_season, game_number, api_key):
+
+    headers = {'User-Agent': HTTP_USER_AGENT, 'Ocp-Apim-Subscription-Key': api_key }
+    url = "https://api.sportsdata.io/v3/nfl/scores/json/Schedules/"+ current_season
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        print(f'Error ({response.status_code}), check API address')
+    else:
+        data =  response.json()
+        season_week = data[game_number - 1]
+
+    season_week_date = pendulum.parse(season_week["Date"])
+
+    return season_week_date
+
+def get_pre_season_week_date(current_season, game_number, api_key):
+    headers = {'User-Agent': HTTP_USER_AGENT, 'Ocp-Apim-Subscription-Key': api_key }
+    url = "https://api.sportsdata.io/v3/nfl/scores/json/Schedules/"+ current_season + "PRE"
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        print(f'Error ({response.status_code}), check API address')
+    else:
+        data =  response.json()
+        pre_season_week = data[game_number - 1]
+
+    pre_season_week_date = pendulum.parse(pre_season_week["Date"])
+
+    return  pre_season_week_date
+
+
+
+
 def get_league_scoreboards(league_id, week):
     """
     Returns the scoreboards from the specified sleeper league.
@@ -29,13 +84,13 @@ def get_league_scoreboards(league_id, week):
     return scoreboards
 
 
-def get_highest_score(league_id):
+def get_highest_score(league_id, api_key):
     """
     Gets the highest score of the week
     :param league_id: Int league_id
     :return: List [score, team_name]
     """
-    week = get_current_week()
+    week = get_current_week(api_key)
     scoreboards = get_league_scoreboards(league_id, week)
     max_score = [0, None]
 
@@ -55,13 +110,13 @@ def get_highest_score(league_id):
     return max_score
 
 
-def get_lowest_score(league_id):
+def get_lowest_score(league_id, api_key):
     """
     Gets the lowest score of the week
     :param league_id: Int league_id
     :return: List[score, team_name]
     """
-    week = get_current_week()
+    week = get_current_week(api_key)
     scoreboards = get_league_scoreboards(league_id, week)
     min_score = [999, None]
 
@@ -174,13 +229,13 @@ def map_roster_id_to_owner_id(league_id):
     return result_dict
 
 
-def get_bench_points(league_id):
+def get_bench_points(league_id, api_key):
     """
 
     :param league_id: Int league_id
     :return: List [(team_name, score), ...]
     """
-    week = get_current_week()
+    week = get_current_week(api_key)
 
     league = League(league_id)
     users = league.get_users()
@@ -215,13 +270,13 @@ def get_bench_points(league_id):
     return result_list
 
 
-def get_negative_starters(league_id):
+def get_negative_starters(league_id, api_key):
     """
     Finds all of the players that scores negative points in standard and
     :param league_id: Int league_id
     :return: Dict {"owner_name":[("player_name", std_score), ...], "owner_name":...}
     """
-    week = get_current_week()
+    week = get_current_week(api_key)
 
     league = League(league_id)
     users = league.get_users()
@@ -272,15 +327,30 @@ def check_starters_and_bench(lineup_dict):
         pass
 
 
-def get_current_week():
+def get_current_week(api_key):
     """
     Gets the current week.
     :return: Int current week
     """
-    today = pendulum.today()
-    starting_week = pendulum.datetime(STARTING_YEAR, STARTING_MONTH, STARTING_DAY)
-    week = today.diff(starting_week).in_weeks()
-    return week + 1
+    # STARTING_YEAR=int("2021")
+    # STARTING_MONTH=int("09")
+    # STARTING_DAY=int("09")
+    # today = pendulum.today()
+    # starting_week = pendulum.datetime(STARTING_YEAR, STARTING_MONTH, STARTING_DAY)
+    # print(starting_week)
+    # week = today.diff(starting_week).in_weeks()
+    # print(week)
+    # return week + 1
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36', 'Ocp-Apim-Subscription-Key': api_key }
+    url = "https://api.sportsdata.io/v3/nfl/scores/json/CurrentWeek"
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        print(f'Error ({response.status_code}), check API address')
+    else:
+        current_week =  response.json()
+
+    return current_week
 
 
 """
@@ -319,13 +389,13 @@ def send_any_string(string_to_send):
     return string_to_send
 
 
-def get_matchups_string(league_id):
+def get_matchups_string(league_id, api_key):
     """
     Creates and returns a message of the current week's matchups.
     :param league_id: Int league_id
     :return: string message of the current week mathchups.
     """
-    week = get_current_week()
+    week = get_current_week(api_key)
     scoreboards = get_league_scoreboards(league_id, week)
     final_message_string = "________________________________\n"
     final_message_string += "Matchups for Week {}:\n".format(week)
@@ -351,13 +421,13 @@ def get_playoff_bracket_string(league_id):
     return bracket
 
 
-def get_scores_string(league_id):
+def get_scores_string(league_id, api_key):
     """
     Creates and returns a message of the league's current scores for the current week.
     :param league_id: Int league_id
     :return: string message of the current week's scores
     """
-    week = get_current_week()
+    week = get_current_week(api_key)
     scoreboards = get_league_scoreboards(league_id, week)
     final_message_string = "Scores \n____________________\n\n"
     for i, matchup_id in enumerate(scoreboards):
@@ -376,7 +446,7 @@ def get_scores_string(league_id):
     return final_message_string
 
 
-def get_close_games_string(league_id, close_num):
+def get_close_games_string(league_id, close_num, api_key):
     """
     Creates and returns a message of the league's close games.
     :param league_id: Int league_id
@@ -384,7 +454,7 @@ def get_close_games_string(league_id, close_num):
     :return: string message of the current week's close games.
     """
     league = League(league_id)
-    week = get_current_week()
+    week = get_current_week(api_key)
     scoreboards = get_league_scoreboards(league_id, week)
     close_games = league.get_close_games(scoreboards, close_num)
 
@@ -433,16 +503,16 @@ def get_standings_string(league_id):
     return final_message_string
 
 
-def get_best_and_worst_string(league_id):
+def get_best_and_worst_string(league_id, api_key):
     """
     :param league_id: Int league_id
     :return: String of the highest Scorer, lowest scorer, most points left on the bench, and Why bother section.
     """
-    highest_scorer = get_highest_score(league_id)[1]
-    highest_score = get_highest_score(league_id)[0]
+    highest_scorer = get_highest_score(league_id, api_key)[1]
+    highest_score = get_highest_score(league_id, api_key)[0]
     highest_score_emojis = "🏆🏆"
-    lowest_scorer = get_lowest_score(league_id)[1]
-    lowest_score = get_lowest_score(league_id)[0]
+    lowest_scorer = get_lowest_score(league_id, api_key)[1]
+    lowest_score = get_lowest_score(league_id, api_key)[0]
     lowest_score_emojis = "😢😢"
     final_string = "{} Highest Scorer:\n{}\n{:.2f}\n\n{} Lowest Scorer:\n {}\n{:.2f}\n\n".format(highest_score_emojis,
                                                                                                  highest_scorer,
@@ -451,12 +521,12 @@ def get_best_and_worst_string(league_id):
                                                                                                  lowest_scorer,
                                                                                                  lowest_score)
     highest_bench_score_emojis = " 😂😂"
-    bench_points = get_bench_points(league_id)
+    bench_points = get_bench_points(league_id, api_key)
     largest_scoring_bench = get_highest_bench_points(bench_points)
     final_string += "{} Most points left on the bench:\n{}\n{:.2f} in standard\n\n".format(highest_bench_score_emojis,
                                                                                            largest_scoring_bench[0],
                                                                                            largest_scoring_bench[1])
-    negative_starters = get_negative_starters(league_id)
+    negative_starters = get_negative_starters(league_id,api_key)
     if negative_starters:
         final_string += "🤔🤔Why bother?\n"
 
@@ -469,13 +539,13 @@ def get_best_and_worst_string(league_id):
     return final_string
 
 
-def get_bench_beats_starters_string(league_id):
+def get_bench_beats_starters_string(league_id, api_key):
     """
     Gets all bench players that outscored starters at their position.
     :param league_id: Int league_id
     :return: String teams which had bench players outscore their starters in a position.
     """
-    week = get_current_week()
+    week = get_current_week(api_key)
     league = League(league_id)
     matchups = league.get_matchups(week)
 
@@ -495,6 +565,7 @@ def get_draft_reminder_string(league_id):
     :return: String with
     """
     league = League(league_id)
+
     draft_date = pendulum.from_timestamp(league.get_all_drafts()[0]["start_time"]/1000, tz=TIMEZONE)
 
     time_to_draft = draft_date - pendulum.now(tz=TIMEZONE)
@@ -511,24 +582,15 @@ def get_draft_reminder_string(league_id):
     return draft_reminder_string
 
 
-
 if __name__ == "__main__":
     """
     Main script for the bot
     """
     bot = None
-
-    logging.basicConfig()
-
-    schedule_logger = logging.getLogger('schedule')
-    schedule_logger.setLevel(level=logging.DEBUG)
-
     bot_type = os.environ["BOT_TYPE"]
     league_id = os.environ["LEAGUE_ID"]
-    off_season_start_date = os.environ["OFF_SEASON_START_DATE"]
-    pre_season_start_date = os.environ["PRE_SEASON_START_DATE"]
-    starting_date = pendulum.from_format(os.environ["SEASON_START_DATE"],'YYYY-MM-DD' )
-    stop_date = os.environ["STOP_DATE"]
+
+    api_key = os.environ["API_KEY"]
 
     # Check if the user specified the close game num. Default is 10.
     try:
@@ -536,10 +598,41 @@ if __name__ == "__main__":
     except:
         close_num = CLOSE_NUM
 
-    start_day = int(os.environ["SEASON_START_DATE"][8:10])
-    start_day += 1
-    str_day_after_start = str(start_day).zfill(2)
-    str_day_after_start_final = os.environ["SEASON_START_DATE"][0:8] + str_day_after_start
+    # Check if the user specified the debug flag. Default is True
+    try:
+        show_debug = os.environ["DEBUG"]
+    except:
+        show_debug = True
+
+    # Check if the user specified the init_message flag. Default is True
+    try:
+        init_message = os.environ["INIT_MESSAGE"]
+    except:
+        init_message = True
+
+    # start_day = int(os.environ["SEASON_START_DATE"][8:10])
+    # start_day += 1
+    # str_day_after_start = str(start_day).zfill(2)
+    # str_day_after_start_final = os.environ["SEASON_START_DATE"][0:8] + str_day_after_start
+
+    season = get_current_season(api_key)
+
+    pre_season_start_date = get_pre_season_week_date(season, 1 , api_key)
+    season_start_date = get_season_week_date(season, 1 , api_key)
+    post_season_start_date = get_season_week_date(season, 241 , api_key)
+    off_season_start_date = get_season_week_date(season, 304 , api_key)
+
+    STARTING_YEAR = season
+
+    logging.basicConfig()
+
+    schedule_logger = logging.getLogger('schedule')
+    schedule_logger.setLevel(level=logging.DEBUG)
+    schedule_logger.disabled = not show_debug
+
+    bot_logger = logging.getLogger('bot')
+    bot_logger.setLevel(level=logging.DEBUG)
+    bot_logger.disabled = not show_debug
 
 
     if bot_type == "groupme":
@@ -555,21 +648,59 @@ if __name__ == "__main__":
         webhook = os.environ["TELEGRAM_WEBHOOK"]
         bot = Telegram(webhook)
 
-    if os.environ["INIT_MESSAGE"] == "true":
-        bot.send(get_welcome_string)  # inital message to send
+    bot_logger.debug("bot_type= " + bot_type )
 
-    # get_draft_reminder_string(league_id)
 
-    schedule.every().thursday.at("19:00").do(bot.send, get_matchups_string, league_id)                      # Matchups Thursday at 4:00 pm ET
-    schedule.every().friday.at("12:00").do(bot.send, get_scores_string, league_id)                          # Scores Friday at 12 pm ET
-    schedule.every().sunday.at("22:00").do(bot.send, get_close_games_string, league_id, int(close_num))     # Close games Sunday on 10:00 pm ET
-    schedule.every().monday.at("22:07").do(bot.send, get_scores_string, league_id)                          # Scores Monday at 12 pm ET
-    schedule.every().tuesday.at("11:00").do(bot.send, get_standings_string,league_id)                       # Standings Tuesday at 11:00 am ET
-    schedule.every().tuesday.at("11:01").do(bot.send, get_best_and_worst_string,league_id)                  # Standings Tuesday at 11:01 am ET
-    schedule.every().day.at("14:35").do(bot.send, get_draft_reminder_string, league_id)                     # Draft reminder every day at 18:00 pm ET
+    league = League(league_id)
+    draft_date = pendulum.from_timestamp(league.get_all_drafts()[0]["start_time"]/1000)
 
+    week = get_current_week(api_key)
+
+    pre_season_scheduler = schedule.Scheduler()
+    post_draft_scheduler = schedule.Scheduler()
+    season_scheduler = schedule.Scheduler()
+    post_season_scheduler = schedule.Scheduler()
+    off_season_scheduler = schedule.Scheduler()
+
+
+    pre_season_scheduler.every().day.at("18:00").do(bot.send, get_draft_reminder_string, league_id)                 # Draft reminder every day at 18:00 pm CDT
+
+    season_scheduler.every().thursday.at("16:00").do(bot.send, get_matchups_string, league_id, api_key)                        # Matchups Thursday at 4:00 pm CDT
+    season_scheduler.every().friday.at("12:00").do(bot.send, get_scores_string, league_id, api_key)                          # Scores Friday at 12 pm CDT
+    season_scheduler.every().sunday.at("22:00").do(bot.send, get_close_games_string, league_id, int(close_num), api_key)     # Close games Sunday on 10:00 pm CDT
+    season_scheduler.every().monday.at("12:00").do(bot.send, get_scores_string, league_id, api_key)                          # Scores Monday at 12 pm CDT
+    season_scheduler.every().tuesday.at("11:00").do(bot.send, get_standings_string,league_id)                       # Standings Tuesday at 11:00 am CDT
+    season_scheduler.every().tuesday.at("11:01").do(bot.send, get_best_and_worst_string,league_id, api_key)                  # Standings Tuesday at 11:01 am CDT
 
     while True:
-        if starting_date <= pendulum.today():
-            schedule.run_pending()
+        my_days = 0
+        today = pendulum.today(TIMEZONE).add(days=my_days)
+        now = pendulum.now(TIMEZONE)
+        bot_logger.debug(str(now))
+
+        bot_logger.debug("\n" + str(pre_season_start_date) + " = pre_season_start_date\n" + str(draft_date) + " = draft\n" + str(season_start_date) + " = season_start_date\n" + str(post_season_start_date) + " = post_season_start_date\n" + str(off_season_start_date) + " = off_season_start_date\n" + str(today) + " = today\n" )
+
+        # Start sending Messages between pre-season and season
+        if pre_season_start_date <= today <= draft_date :
+            bot_logger.debug("Period between PRE-SEASON and DRAFT DAY")
+            bot_logger.debug("\n" + str(pre_season_start_date) + " = pre_season_start_date\n" + str(today) + " = today\n" + str(draft_date) + " = draft")
+            pre_season_scheduler.run_pending()
+        elif draft_date <= today <= season_start_date :
+            bot_logger.debug("Period between DRAFT DAY and REGULAR SEASON")
+            bot_logger.debug("\n" + str(draft_date) + " = draft\n" + str(today) + " = today\n" + str(season_start_date) + " = season_start_date" )
+            season_scheduler.run_pending()
+        elif season_start_date <= today <= post_season_start_date :
+            bot_logger.debug("Period between SEASON and POST-SEASON")
+            bot_logger.debug("\n" + str(season_start_date) + " = season_start_date\n" + str(today) + " = today\n" + str(post_season_start_date) + " = post_season_start_date")
+            season_scheduler.run_pending()
+        elif post_season_start_date <=  today <= off_season_start_date :
+            bot_logger.debug("Period between POST-SEASON and OFF-SEASON")
+            bot_logger.debug("\n" + str(post_season_start_date) + " = post_season_start_date\n" + str(today) + " = today\n" + str(off_season_start_date) + " = off_season_start_date")
+            post_season_scheduler.run_pending()
+        elif off_season_start_date <=  today <= pre_season_start_date.add(days=365):
+            bot_logger.debug("Period between OFF-SEASON and NEXT YEAR PRE-SEASON")
+            bot_logger.debug("\n" + str(off_season_start_date) + " = off_season_start_date\n" + str(today) + " = today\n" + str(pre_season_start_date.add(days=365)) + " = pre_season_start_date_next_year")
+            off_season_scheduler.run_pending()
+
+
         time.sleep(50)
