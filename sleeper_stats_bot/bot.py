@@ -1,6 +1,7 @@
 import schedule
 import time
 import os
+import subprocess
 import pendulum
 import logging
 import requests
@@ -581,6 +582,14 @@ def get_draft_reminder_string(league_id):
 
     return draft_reminder_string
 
+def get_pdf_report_link():
+    script_path = "weekly-report/main.py"
+    options = " -a"
+
+    output = subprocess.Popen("yes | python " + script_path + options , shell=True).communicate()
+
+    print(output)
+
 
 if __name__ == "__main__":
     """
@@ -671,6 +680,8 @@ if __name__ == "__main__":
     season_scheduler.every().monday.at("12:00").do(bot.send, get_scores_string, league_id, api_key)                          # Scores Monday at 12 pm CDT
     season_scheduler.every().tuesday.at("11:00").do(bot.send, get_standings_string,league_id)                       # Standings Tuesday at 11:00 am CDT
     season_scheduler.every().tuesday.at("11:01").do(bot.send, get_best_and_worst_string,league_id, api_key)                  # Standings Tuesday at 11:01 am CDT
+
+    get_pdf_report_link()
 
     while True:
         my_days = 0
