@@ -47,11 +47,11 @@ def test_get_highest_score():
 def test_get_best_and_worst():
     best_and_worst = bot.get_best_and_worst_string(442724598706860032)
     print(best_and_worst)
-def test_get_current_week():
+def test_get_current_week(api_key):
     """
     Tests the get_current_week method
     :return:
     """
-    current_week = bot.get_current_week()
+    current_week = bot.get_current_week(api_key)
     assert current_week > 0
     assert current_week < 16
