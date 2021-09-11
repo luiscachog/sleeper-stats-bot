@@ -50,10 +50,10 @@ repos:
 #    hooks:
 #      - id: checkmake
 
-  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
-    rev: v1.2.1
-    hooks:
-      - id: python-safety-dependencies-check
+#  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+#    rev: v1.2.1
+#    hooks:
+#      - id: python-safety-dependencies-check
 
   - repo: https://github.com/golangci/golangci-lint
     rev: v1.36.0
@@ -104,11 +104,11 @@ repos:
     hooks:
       - id: gitlint
 
-  - repo: https://github.com/psf/black
-    rev: 20.8b1
-    hooks:
-      - id: black
-        language_version: python3
+#  - repo: https://github.com/psf/black
+#    rev: 20.8b1
+#    hooks:
+#      - id: black
+#        language_version: python3
 
   - repo: https://github.com/IamTheFij/ansible-pre-commit
     rev: v0.1.2
@@ -121,10 +121,10 @@ repos:
       - id: talisman-commit
       - id: talisman-push
 
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.4
-    hooks:
-      - id: flake8
+#  - repo: https://gitlab.com/pycqa/flake8
+#    rev: 3.8.4
+#    hooks:
+#      - id: flake8
 
   # - repo: https://github.com/motet-a/jinjalint
   #   rev: '0.5'
@@ -160,10 +160,10 @@ repos:
       #       unit_test_directory/.*\.yml
       #     )$
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.7.0
-    hooks:
-      - id: isort
+#  - repo: https://github.com/pycqa/isort
+#    rev: 5.7.0
+#    hooks:
+#      - id: isort
 
   # https://github.com/myint/rstcheck/issues/69
   # - repo: https://github.com/myint/rstcheck
