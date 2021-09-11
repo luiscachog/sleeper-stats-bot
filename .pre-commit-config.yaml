@@ -121,10 +121,10 @@ repos:
       - id: talisman-commit
       - id: talisman-push
 
-#  - repo: https://gitlab.com/pycqa/flake8
-#    rev: 3.8.4
-#    hooks:
-#      - id: flake8
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.4
+    hooks:
+      - id: flake8
 
   # - repo: https://github.com/motet-a/jinjalint
   #   rev: '0.5'

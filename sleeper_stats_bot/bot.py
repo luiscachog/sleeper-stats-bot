@@ -109,7 +109,6 @@ def get_league_scoreboards(league, week):
     scoreboards = league.get_scoreboards(
         rosters, matchups, users, "pts_half_ppr", week
     )
-    print(scoreboards)
 
     return scoreboards
 
@@ -517,7 +516,6 @@ def get_close_games_string(league, close_num, api_key):
 
     for i, matchup_id in enumerate(close_games):
         matchup = close_games[matchup_id]
-        print(matchup)
         string_to_add = ""
         string_to_add += (
             "Matchup {}\n{:<8} {:<8.2f}\n{:<8} {:<8.2f}\n\n".format(
@@ -592,7 +590,7 @@ def get_best_and_worst_string(league, api_key):
     bench_points = get_bench_points(league, api_key)
     largest_scoring_bench = get_highest_bench_points(bench_points)
     final_string += (
-        "{} Most points left on the bench:\n{}\n{:.2f} in standard\n\n".format(
+        "{} Most points left on the bench:\n{}\n{:.2f}\n\n".format(
             highest_bench_score_emojis,
             largest_scoring_bench[0],
             largest_scoring_bench[1],
@@ -606,7 +604,7 @@ def get_best_and_worst_string(league, api_key):
         negative_starters_list = negative_starters[key]
         final_string += "{} Started:\n".format(key)
         for negative_starter_tup in negative_starters_list:
-            final_string += "{} who had {} in standard\n".format(
+            final_string += "{} who sucks, and had {} points \n".format(
                 negative_starter_tup[0], negative_starter_tup[1]
             )
         final_string += "\n"
@@ -675,8 +673,6 @@ def get_pdf_report_link(league_id, season):
     gdrive_message_path = os.path.join(
         dirname, "weekly-report/output/data/gdrive_message.txt"
     )
-
-    print("dirname:" + dirname)
 
     if os.path.exists(gdrive_message_path):
         os.remove(gdrive_message_path)
@@ -802,7 +798,7 @@ if __name__ == "__main__":
     season_scheduler.every().tuesday.at("11:00").do(
         bot.send, get_standings_string, league
     )  # Standings Tuesday at 11:00 am CDT
-    season_scheduler.every().day.at("01:39").do(
+    season_scheduler.every().tuesday.at("11:01").do(
         bot.send, get_best_and_worst_string, league, api_key
     )  # Standings Tuesday at 11:01 am CDT
 
