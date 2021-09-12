@@ -589,12 +589,10 @@ def get_best_and_worst_string(league, api_key):
     highest_bench_score_emojis = " 😂😂"
     bench_points = get_bench_points(league, api_key)
     largest_scoring_bench = get_highest_bench_points(bench_points)
-    final_string += (
-        "{} Most points left on the bench:\n{}\n{:.2f}\n\n".format(
-            highest_bench_score_emojis,
-            largest_scoring_bench[0],
-            largest_scoring_bench[1],
-        )
+    final_string += "{} Most points left on the bench:\n{}\n{:.2f}\n\n".format(
+        highest_bench_score_emojis,
+        largest_scoring_bench[0],
+        largest_scoring_bench[1],
     )
     negative_starters = get_negative_starters(league, api_key)
     if negative_starters:

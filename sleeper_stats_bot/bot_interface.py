@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 from constants import GITHUB_REPOSITORY
+
 
 class BotInterface:
     def __init__(self, bot_id):
@@ -6,12 +8,15 @@ class BotInterface:
 
     def send_message(self, message):
         """
-        Will be implemented in each derived class differently. Sends a message to the chat. NotImplemented error
+        Will be implemented in each derived class differently.
+        Sends a message to the chat. NotImplemented error
         if the method is not implemented in a subclass.
         :param message: The message to send
         :return: None
         """
-        raise NotImplementedError('A send message method has not been implemented')
+        raise NotImplementedError(
+            "A send message method has not been implemented"
+        )
 
     def send(self, callback, *args):
         """
@@ -23,6 +28,10 @@ class BotInterface:
         try:
             message = callback(*args)
         except Exception as err:
-            message = "There was an error that occurred with the bot: {}\n\n".format(err)
+            message = (
+                "There was an error that occurred with the bot: {}\n\n".format(
+                    err
+                )
+            )
             message += "Please report it at " + GITHUB_REPOSITORY + "/issues"
         self.send_message(message)

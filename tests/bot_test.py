@@ -1,5 +1,8 @@
-from sleeper_stats_bot import bot
+# -*- coding: utf-8 -*-
 import pytest
+
+from sleeper_stats_bot import bot
+
 
 def test_get_matchups_string():
     """
@@ -10,10 +13,12 @@ def test_get_matchups_string():
     print(matchups_string)
     assert isinstance(matchups_string, str)
 
+
 def test_get_scores():
     scores_string = bot.get_scores_string(442724598706860032)
     print(scores_string)
     assert isinstance(scores_string, str)
+
 
 def test_get_standings():
     """
@@ -24,7 +29,10 @@ def test_get_standings():
     print(standings_string)
     assert isinstance(standings_string, str)
 
-@pytest.mark.skip(reason="no way of currently testing this. Should be easier next season")
+
+@pytest.mark.skip(
+    reason="no way of currently testing this. Should be easier next season"
+)
 def test_get_close_games():
     """
     Tests the get_close_games method
@@ -33,7 +41,10 @@ def test_get_close_games():
     close_game_string = bot.get_close_games_string(355526480094113792, 20)
     assert isinstance(close_game_string, str)
 
-@pytest.mark.skip(reason="no way of currently testing this. Should be easier next season")
+
+@pytest.mark.skip(
+    reason="no way of currently testing this. Should be easier next season"
+)
 def test_get_highest_score():
     """
     Tests the get_highest_score method
@@ -44,9 +55,12 @@ def test_get_highest_score():
     assert isinstance(high_score_list[0], float)
     assert isinstance(high_score_list[1], str)
 
+
 def test_get_best_and_worst():
     best_and_worst = bot.get_best_and_worst_string(442724598706860032)
     print(best_and_worst)
+
+
 def test_get_current_week(api_key):
     """
     Tests the get_current_week method
