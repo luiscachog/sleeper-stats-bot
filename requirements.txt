@@ -18,3 +18,4 @@ reportlab==3.6.1
 numpy==1.21.2
 httplib2~=0.19.1
 slackclient==2.9.3
+slack==0.0.2
