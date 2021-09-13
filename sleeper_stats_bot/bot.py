@@ -7,17 +7,12 @@ import time
 import pendulum
 import requests
 import schedule
-from constants import CLOSE_NUM
-from constants import HTTP_USER_AGENT
-from constants import LEAGUE_NAME
-from constants import TIMEZONE
+from constants import CLOSE_NUM, HTTP_USER_AGENT, LEAGUE_NAME, TIMEZONE
 from discord import Discord
 from group_me import GroupMe
 from prettytable import PrettyTable
 from slack import Slack
-from sleeper_wrapper import League
-from sleeper_wrapper import Players
-from sleeper_wrapper import Stats
+from sleeper_wrapper import League, Players, Stats
 from telegram import Telegram
 
 
@@ -221,7 +216,8 @@ def get_highest_bench_points(bench_points):
     """
     Returns a tuple of the team with the highest scoring bench
     :param bench_points: List [(team_name, std_points)]
-    :return: Tuple (team_name, std_points) of the team with most std_points
+    :return: Tuple (team_name, std_points) of the team with
+            most std_points
     """
     max_tup = ("team_name", 0)
     for tup in bench_points:
@@ -397,7 +393,7 @@ def get_bot_message_schedule():
         ],
     )
     x.add_column(
-        "Hour", ["19:00", "12:00", "22:00", "12:00", "09:00", "11:00", "18:00"]
+        "Hour", ["19:00", "10:00", "22:00", "10:00", "10:00", "11:00", "18:00"]
     )
     x.add_column(
         "Message",
@@ -405,7 +401,7 @@ def get_bot_message_schedule():
             "Week Matchups",
             "Thursday Night Scores",
             "Close Games",
-            "Monday Night Scores",
+            "Sunday Night Scores",
             "PDF Report",
             "League Standings",
             "Draft Reminder",
@@ -503,7 +499,7 @@ def get_close_games_string(league, close_num, api_key):
     """
     Creates and returns a message of the league's close games.
     :param league: Object league
-    :param close_num: Int what poInt difference is considered a close game.
+    :param close_num: Int point difference to considered a close game.
     :return: string message of the current week's close games.
     """
     week = get_current_week(api_key)
@@ -778,21 +774,21 @@ if __name__ == "__main__":
         bot.send, get_draft_reminder_string, league_id
     )  # Draft reminder every day at 18:00 pm CDT
 
-    season_scheduler.every().thursday.at("16:00").do(
+    season_scheduler.every().thursday.at("19:00").do(
         bot.send, get_matchups_string, league, api_key
-    )  # Matchups Thursday at 4:00 pm CDT
-    season_scheduler.every().friday.at("12:00").do(
+    )  # Matchups Thursday at 7:00 pm CDT
+    season_scheduler.every().friday.at("10:00").do(
         bot.send, get_scores_string, league, api_key
-    )  # Scores Friday at 12 pm CDT
+    )  # Scores Friday at 10 am CDT
     season_scheduler.every().sunday.at("22:00").do(
         bot.send, get_close_games_string, league, int(close_num), api_key
     )  # Close games Sunday on 10:00 pm CDT
-    season_scheduler.every().monday.at("12:00").do(
+    season_scheduler.every().monday.at("10:00").do(
         bot.send, get_scores_string, league, api_key
-    )  # Scores Monday at 12 pm CDT
-    season_scheduler.every().friday.at("22:37").do(
+    )  # Scores Monday at 10 am CDT
+    season_scheduler.every().tuesday.at("10:00").do(
         bot.send, get_pdf_report_link, league_id, season
-    )  # PDF Report Tuesday at 9:00 am CDT
+    )  # PDF Report Tuesday at 10:00 am CDT
     season_scheduler.every().tuesday.at("11:00").do(
         bot.send, get_standings_string, league
     )  # Standings Tuesday at 11:00 am CDT
