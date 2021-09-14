@@ -786,7 +786,7 @@ if __name__ == "__main__":
     season_scheduler.every().monday.at("10:00").do(
         bot.send, get_scores_string, league, api_key
     )  # Scores Monday at 10 am CDT
-    season_scheduler.every().tuesday.at("11:30").do(
+    season_scheduler.every().tuesday.at("11:35").do(
         bot.send, get_pdf_report_link, league_id, season
     )  # PDF Report Tuesday at 10:00 am CDT
     season_scheduler.every().tuesday.at("11:00").do(
