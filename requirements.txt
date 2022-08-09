@@ -15,6 +15,7 @@ pydrive2==1.9.3
 pytest==6.1.0
 reportlab==3.6.1
 requests==2.24.0
+requests_cache==0.9.5
 schedule==1.1.0
 #sleeper-api-wrapper==1.0.7
 slackclient==2.9.3
