@@ -1,5 +1,5 @@
 fileignoreconfig:
 - filename: sleeper_stats_bot/bot.py
-  checksum: 4dbbd001f49728a3bc9c724476263d8a73f96c57cd333ab5402526b8b5916822
+  checksum: e870b73cf90963bd6bea782a9eff25cd1227587d87604c18f4ce1b9be072757d
 - filename: weekly-report
   checksum: a5d2c440fc0d505f6134babb63bca89a14f5e3a5e3c6beeaaa75568775345e4f

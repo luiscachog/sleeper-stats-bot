@@ -18,6 +18,11 @@ class BotInterface:
             "A send message method has not been implemented"
         )
 
+    def send_photo(self, photo, caption):
+        raise NotImplementedError(
+            "A send photo method has not been implemented"
+        )
+
     def send(self, callback, *args):
         """
 

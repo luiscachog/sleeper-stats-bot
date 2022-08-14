@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 GITHUB_REPOSITORY = "https://github.com/luiscachog/sleeper-stats-bot"
 LEAGUE_NAME = "Nerd Football League"
 CLOSE_NUM = 10
@@ -6,6 +7,29 @@ TIMEZONE = "America/Chicago"
 HTTP_USER_AGENT = (
     "Mozilla/5.0 (Macintosh; "
     "Intel Mac OS X 10_11_5) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) "
+    "(HTML, like Gecko) "
     "Chrome/50.0.2661.102 Safari/537.36"
 )
+DAY_IN_SECONDS = 86400
+
+# pts_std = Standard
+# pts_ppr = PPR
+# pts_half_ppr = Half PPR
+SCORING_TYPE = "pts_half_ppr"
+BONUS_REC_TE = 0.5
+BONUS_REC_FIRST_DOWN = 0.5
+BONUS_FUMBLE_FORCED_DEF = 1.0
+BONUS_INT_QB = 4
+
+THURSDAY_NIGHT_WEEK_MATCHUPS_HOUR = "12:56"
+THURSDAY_NIGHT_SCORES_HOUR = "22:45"
+SUNDAY_NIGHT_SCORES_HOUR = "22:45"
+SUNDAY_NIGHT_CLOSE_GAMES_HOUR = "23:10"
+MONDAY_NIGHT_SCORES_HOUR = "22:30"
+TUESDAY_MORNING_WEEK_SCORES_HOUR = "10:00"
+TUESDAY_MORNING_STANDINGS_HOUR = "10:10"
+TUESDAY_MORNING_BEST_WORST_HOUR = "10:11"
+TUESDAY_MORNING_REPORT_HOUR = "10:20"
+DAILY_NIGHT_DRAFT_REMINDER_HOUR = "13:19"
+
+DAYS_BEFORE_DRAFT = 20
