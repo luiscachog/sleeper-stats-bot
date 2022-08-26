@@ -34,7 +34,7 @@ DAILY_NIGHT_DRAFT_REMINDER_HOUR = "17:00"
 
 DAYS_BEFORE_DRAFT = 20
 
-FONT_NAME = "Fira Code Medium Nerd Font Complete.otf"
+FONT_NAME = "font/Fira Code Medium Nerd Font Complete.otf"
 FONT_SIZE = 14
 
 IMAGE_WIDTH_PIXELS = 550
