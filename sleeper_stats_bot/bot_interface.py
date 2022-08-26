@@ -20,7 +20,7 @@ class BotInterface:
 
     def send_photo(self, photo, caption):
         raise NotImplementedError(
-            "A send photo method has not been implemented"
+            "A send message method has not been implemented"
         )
 
     def send(self, callback, *args):
@@ -31,7 +31,13 @@ class BotInterface:
         :return: None
         """
         try:
-            message = callback(*args)
+            if type(args[0]) is str:
+                message = callback(*args)
+                self.send_message(message)
+
+            else:
+                self.send_photo(args[0])
+
         except Exception as err:
             message = (
                 "There was an error that occurred with the bot: {}\n\n".format(
@@ -39,4 +45,3 @@ class BotInterface:
                 )
             )
             message += "Please report it at " + GITHUB_REPOSITORY + "/issues"
-        self.send_message(message)

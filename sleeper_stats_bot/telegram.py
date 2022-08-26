@@ -12,29 +12,27 @@ class Telegram(BotInterface):
     def __init__(self, webhook):
         self.webhook = webhook
 
-    def send_photo(self, photo, caption):
-        requests.post(
+    def send_photo(self, photo):
+        url = (
             "https://api.telegram.org/bot"
             + telegram_bot_token
-            + "/sendPhoto"
-            + "&caption="
-            + caption,
-            files={"photo": photo},
-            json={
-                "chat_id": telegram_chat_id,
-                "parse_mode": "HTML",
-            },
+            + "/sendPhoto?chat_id="
+            + telegram_chat_id
         )
+        files = {"photo": photo}
+        requests.post(url, files=files)
 
     def send_message(self, message):
-        requests.post(
+
+        url = (
             "https://api.telegram.org/bot"
             + telegram_bot_token
-            + "/sendMessage",
-            json={
-                "text": message,
-                "disable_notification": "true",
-                "chat_id": telegram_chat_id,
-                "parse_mode": "HTML",
-            },
+            + "/sendMessage?chat_id="
+            + telegram_chat_id
+            + "&text="
+            + message
+            + "&parse_mode=HTML"
+            + "&disable_notification=true"
         )
+
+        requests.post(url)
