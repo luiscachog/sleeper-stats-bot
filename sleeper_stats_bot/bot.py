@@ -1327,8 +1327,8 @@ if __name__ == "__main__":
     # send_close_games_photo_to_telegram(logger=bot_logger)
     # send_standings_photo_to_telegram(logger=bot_logger)
     # send_best_and_worst_photo_to_telegram(logger=bot_logger)
-    bot.send(get_pdf_report_link, league_id, season, bot_logger)
-    time.sleep(10)
+    # bot.send(get_pdf_report_link, league_id, season, bot_logger)
+    # time.sleep(10)
 
     # Draft Reminder
     # Send a message during pre_season, DAYS_BEFORE_DRAFT days before the draft
@@ -1340,7 +1340,7 @@ if __name__ == "__main__":
     # Week Matchups:
     # Send a message during the season to know the matchups for the week
     # every Thursday at THURSDAY_NIGHT_WEEK_MATCHUPS_HOUR
-    season_scheduler.every().day.at(THURSDAY_NIGHT_WEEK_MATCHUPS_HOUR).do(
+    season_scheduler.every().thursday.at(THURSDAY_NIGHT_WEEK_MATCHUPS_HOUR).do(
         send_week_matchups_photo_to_telegram
     )
 
@@ -1467,7 +1467,7 @@ if __name__ == "__main__":
                 + str(season_start_date)
                 + "\n"
             )
-            season_scheduler.run_pending()
+            post_draft_scheduler.run_pending()
 
         elif season_start_date <= today <= post_season_start_date:
             bot_logger.debug("REGULAR-SEASON - POST-SEASON PERIOD")
