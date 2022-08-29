@@ -1189,7 +1189,7 @@ if __name__ == "__main__":
     try:
         init_message = os.environ["INIT_MESSAGE"]
     except Exception:
-        init_message = True
+        init_message = False
 
     # Check if the user specified the playoff_line variable. Default is 8
     try:
@@ -1278,7 +1278,7 @@ if __name__ == "__main__":
     #####
     # Initial message to send
     #####
-    if init_message:
+    if init_message is True:
         send_welcome_photo_to_telegram(bot_logger)
 
     """
