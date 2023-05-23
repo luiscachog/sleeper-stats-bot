@@ -15,7 +15,7 @@ prettytable==3.3.0
 pydrive2==1.9.3
 pytest==6.1.0
 reportlab==3.6.1
-requests==2.24.0
+requests==2.31.0
 requests-ratelimiter==0.2.1
 requests_cache==0.9.5
 rich==10.10.0
