@@ -3,7 +3,7 @@ colorama==0.4.4
 ff_espn_api==1.1.9
 git+https://github.com/astanin/python-tabulate.git
 git+https://github.com/luiscachog/sleeper-api-wrapper.git
-GitPython==3.1.18
+GitPython==3.1.32
 google-api-python-client==2.20.0
 httplib2~=0.19.1
 numpy==1.22.0
